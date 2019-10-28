@@ -10,7 +10,8 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Boa tarde Cocoaheads,\n Campinas!").multilineTextAlignment(.center)
+        Text("Boa tarde Cocoaheads,\n Campinas!")
+            .multilineTextAlignment(.center)
     }
 }
 
