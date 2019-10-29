@@ -8,6 +8,19 @@ warn("PR is classed as Work in Progress") if github.pr_title.include? "[WIP]"
 # Warn when there is a big PR
 warn("Big PR") if git.lines_of_code > 500
 
-# Don't let testing shortcuts get into master by accident
-fail("fdescribe left in tests") if `grep -r fdescribe specs/ `.length > 1
-fail("fit left in tests") if `grep -r fit specs/ `.length > 1
+can_merge = github.pr_json["mergeable"]
+warn("This PR cannot be merged yet.", sticky: false) unless can_merge
+
+has_source_changes = !git.modified_files.grep(/BitriseCocoaheads/).empty?
+has_tests_changes = !git.modified_files.grep(/BitriseCocoaheadsTests/).empty?
+
+
+if has_source_changes && !has_tests_changes
+  warn("Update the library but not update the tests 🤔.", sticky: false)
+end
+
+# --------------------------------------------------------------------------------------------------------------------
+# Run SwiftLint
+# --------------------------------------------------------------------------------------------------------------------
+
+swiftlint.lint_files inline_mode: true
